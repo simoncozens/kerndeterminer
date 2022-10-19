@@ -1,0 +1,12 @@
+name = "kerndeterminer"
+version = "0.0.1"
+description = "Work out how far apart things should be (very quickly)"
+readme = "README.md"
+
+[project]
+dependencies = []
+name = "kerndeterminer"
+
+[build-system]
+requires = ["maturin>=0.10,<0.11"]
+build-backend = "maturin"

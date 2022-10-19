@@ -1,0 +1,26 @@
+[package]
+name = "kerndeterminer"
+version = "0.0.1"
+authors = ["Simon Cozens <simon@simon-cozens.org>"]
+edition = "2018"
+description = "Work out how far apart things should be (very quickly)"
+repository = "https://github.com/simoncozens/kerndeterminer"
+exclude = ["dist/*"]
+
+[dependencies]
+babelfont = { git = "https://github.com/simoncozens/rust-font-tools" }
+kurbo = "0.8"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.maturin]
+classifier = [
+  "Programming Language :: Rust",
+  "Topic :: Multimedia :: Graphics :: Editors :: Vector-Based",
+]
+
+    [dependencies.pyo3]
+    version = "0.12.2"
+    features = ["extension-module"]
