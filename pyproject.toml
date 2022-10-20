@@ -1,6 +1,7 @@
 name = "kerndeterminer"
 version = "0.0.1"
 description = "Work out how far apart things should be (very quickly)"
+authors = ["Simon Cozens <simon@simon-cozens.org>"]
 readme = "README.md"
 
 [project]
