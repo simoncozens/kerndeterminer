@@ -9,5 +9,5 @@ dependencies = []
 name = "kerndeterminer"
 
 [build-system]
-requires = ["maturin>=0.10,<0.11"]
+requires = ["maturin>=1.3.2"]
 build-backend = "maturin"
