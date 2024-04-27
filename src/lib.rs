@@ -3,6 +3,7 @@ use core::cmp::Ordering;
 use kurbo::{Affine, BezPath, CubicBez, ParamCurve, ParamCurveNearest, PathSeg, Vec2};
 use pyo3::prelude::*;
 use std::collections::HashMap;
+use {env_logger, log};
 
 #[pyclass]
 struct KernDeterminer {
@@ -14,6 +15,7 @@ struct KernDeterminer {
 impl KernDeterminer {
     #[new]
     fn new(filename: String) -> Self {
+        env_logger::init();
         let mut font = babelfont::load(&filename).expect("Couldn't load font");
         for glyph_index in 0..font.glyphs.0.len() {
             let mut decomposed_layers = Vec::new();
@@ -115,7 +117,7 @@ fn _determine_kern(
             kern + layer_1.width as f32,
             height as f32,
         ) {
-            // println!("With kern of {:?}, distance was {:?}", kern, md);
+            log::debug!("With kern of {:?}, distance was {:?}", kern, md);
             min_distance = md;
             kern += target_distance - min_distance;
             if kern < minimum_possible {
@@ -149,12 +151,12 @@ fn _path_distance(
         for p2 in right_paths {
             let moved_p2 = offset2 * p2;
             let d = min_distance_bezpath(&moved_p1, &moved_p2);
-            // println!("  d={:?}", d);
+            log::debug!("  d={:?}", d);
             if min_distance.is_none() || d < min_distance.unwrap() {
-                // println!("    (new record)");
+                log::debug!("    (new record)");
                 min_distance = Some(d)
             } else {
-                // println!("    (ignored)");
+                log::debug!("    (ignored)");
             }
         }
     }
@@ -189,7 +191,7 @@ fn min_distance_bezpath(one: &BezPath, other: &BezPath) -> f64 {
         }
     }
     if let Some((_, s1, s2)) = best_pair {
-        // println!("Best pair was {:?}, {:?}", s1, s2);
+        log::debug!("Best pair was {:?}, {:?}", s1, s2);
         match (s1, s2) {
             (PathSeg::Line(l1), PathSeg::Line(l2)) => line_line_dist(l1, l2),
             (PathSeg::Line(l1), PathSeg::Cubic(c2)) => line_curve_dist(l1, c2),

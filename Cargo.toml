@@ -10,6 +10,8 @@ exclude = ["dist/*"]
 [dependencies]
 babelfont = { git = "https://github.com/simoncozens/rust-font-tools" }
 kurbo = "0.8"
+env_logger = "0.9.3"
+log = "*"
 
 
 [lib]
