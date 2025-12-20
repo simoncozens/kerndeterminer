@@ -1,0 +1,38 @@
+name: Rust
+
+on:
+  - push
+  - pull_request
+  - merge_group
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        name: Set up Rust for caching
+
+      - name: Lint for formatting
+        run: cargo fmt --all -- --check
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        name: Set up Rust for caching
+      - name: Lint for warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings

@@ -1,14 +1,11 @@
-use babelfont::{Font, Layer, Master};
+use babelfont::{Font, Master};
 use core::cmp::Ordering;
-use kurbo::{Affine, BezPath, CubicBez, ParamCurve, ParamCurveNearest, PathSeg, Vec2};
+use kurbo::{Affine, BezPath, ParamCurve, ParamCurveNearest, PathSeg, Vec2};
 use pyo3::prelude::*;
-use std::collections::HashMap;
-use {env_logger, log};
 
 #[pyclass]
 struct KernDeterminer {
     font: Font,
-    layer_paths: HashMap<Layer, Vec<BezPath>>,
 }
 
 #[pymethods]
@@ -37,10 +34,7 @@ impl KernDeterminer {
                 }
             }
         }
-        KernDeterminer {
-            font,
-            layer_paths: HashMap::new(),
-        }
+        KernDeterminer { font }
     }
 
     fn determine_kern(
@@ -49,7 +43,7 @@ impl KernDeterminer {
         right_glyph: String,
         master_name: String,
         target_distance: f32,
-        height: i32,
+        height: f64,
         max_tuck: f32,
     ) -> PyResult<f32> {
         let master = self
@@ -74,7 +68,7 @@ fn _determine_kern(
     left_glyph: &str,
     right_glyph: &str,
     target_distance: f32,
-    height: i32,
+    height: f64,
     max_tuck: f32,
 ) -> f32 {
     let layer_1 = font
@@ -90,11 +84,11 @@ fn _determine_kern(
         .iter()
         .find(|a| a.name == "exit")
         .map(|a| a.y)
-        .unwrap_or(0);
-    let height = if height > 0 { height - lexit } else { height };
+        .unwrap_or(0.0);
+    let height = if height > 0.0 { height - lexit } else { height };
     let mut minimum_possible = -1000.0;
     if max_tuck != 0.0 {
-        let maximum_width = layer_1.width as f32 * max_tuck;
+        let maximum_width = layer_1.width * max_tuck;
         let left_edge = (-layer_2.lsb().expect("Oops")).min(0.0);
         minimum_possible = left_edge - maximum_width;
     }
@@ -114,7 +108,7 @@ fn _determine_kern(
         if let Some(md) = _path_distance(
             &left_paths,
             &right_paths,
-            kern + layer_1.width as f32,
+            kern + layer_1.width,
             height as f32,
         ) {
             log::debug!("With kern of {:?}, distance was {:?}", kern, md);
@@ -173,9 +167,9 @@ fn min_distance_bezpath(one: &BezPath, other: &BezPath) -> f64 {
     let segs1 = one.segments();
     let mut best_pair: Option<(f64, kurbo::PathSeg, kurbo::PathSeg)> = None;
     for s1 in segs1 {
-        let p1 = vec![s1.eval(0.0), s1.eval(0.5), s1.eval(1.0)];
+        let p1 = [s1.eval(0.0), s1.eval(0.5), s1.eval(1.0)];
         for s2 in other.segments() {
-            let p2 = vec![s2.eval(0.0), s2.eval(0.5), s2.eval(1.0)];
+            let p2 = [s2.eval(0.0), s2.eval(0.5), s2.eval(1.0)];
             let dist = p1
                 .iter()
                 .zip(p2.iter())
@@ -196,7 +190,7 @@ fn min_distance_bezpath(one: &BezPath, other: &BezPath) -> f64 {
             (PathSeg::Line(l1), PathSeg::Line(l2)) => line_line_dist(l1, l2),
             (PathSeg::Line(l1), PathSeg::Cubic(c2)) => line_curve_dist(l1, c2),
             (PathSeg::Cubic(c1), PathSeg::Line(l2)) => line_curve_dist(l2, c1),
-            (PathSeg::Cubic(c1), PathSeg::Cubic(c2)) => s1.min_dist(s2, 0.5).distance,
+            (PathSeg::Cubic(_), PathSeg::Cubic(_)) => s1.min_dist(s2, 0.5).distance,
             _ => panic!("Unusual configuration"),
         }
     } else {

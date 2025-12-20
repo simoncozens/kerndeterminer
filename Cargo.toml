@@ -8,8 +8,8 @@ repository = "https://github.com/simoncozens/kerndeterminer"
 exclude = ["dist/*"]
 
 [dependencies]
-babelfont = { git = "https://github.com/simoncozens/rust-font-tools" }
-kurbo = "0.8"
+babelfont = "0.1.1-pre"
+kurbo = "0.12.0"
 env_logger = "0.9.3"
 log = "*"
 
@@ -19,6 +19,6 @@ crate-type = ["cdylib"]
 
 [package.metadata.maturin]
 
-    [dependencies.pyo3]
-    version = "0.12.2"
-    features = ["extension-module"]
+[dependencies.pyo3]
+version = "0.12.2"
+features = ["extension-module"]

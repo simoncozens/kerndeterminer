@@ -1,11 +1,12 @@
 name = "kerndeterminer"
-version = "0.0.1"
+version = "0.0.2"
 description = "Work out how far apart things should be (very quickly)"
 authors = ["Simon Cozens <simon@simon-cozens.org>"]
 readme = "README.md"
 
 [project]
 dependencies = []
+version = "0.0.2"
 name = "kerndeterminer"
 
 [build-system]
