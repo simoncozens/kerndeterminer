@@ -158,7 +158,7 @@ fn _path_distance(
 }
 
 #[pymodule]
-fn kerndeterminer(_py: Python, m: &PyModule) -> PyResult<()> {
+fn kerndeterminer(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<KernDeterminer>()?;
     Ok(())
 }
